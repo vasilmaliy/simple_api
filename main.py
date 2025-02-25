@@ -46,6 +46,9 @@ def get_x_page_with_selenium(url: str) -> Tuple[Optional[str], int]:
         if driver:
             driver.quit()
 
+@app.route('/')
+def hello():
+    return "Привіт, це твій API сервер!"
 
 @app.route('/scrape', methods=['POST'])
 def scrape_page():
