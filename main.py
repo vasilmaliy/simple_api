@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import os
 import random
-import time  # Додано імпорт модуля time
+import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from typing import Optional, Tuple
@@ -16,9 +16,44 @@ def get_header() -> dict:
     headers = [
         {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36",
-            "Referer": "https://www.google.com/"
+            "Referer": "https://www.google.com/",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Cache-Control": "max-age=0",
+            "Connection": "keep-alive",
+            "TE": "Trailers"
         },
-        # ... інші заголовки
+        {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/90.0.818.62 Safari/537.36",
+            "Referer": "https://www.google.com/",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Cache-Control": "max-age=0",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1"
+        },
+        {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0",
+            "Referer": "https://www.google.com/",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Cache-Control": "max-age=0",
+            "Connection": "keep-alive",
+            "TE": "Trailers"
+        },
+        {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            "Referer": "https://www.google.com/",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Cache-Control": "max-age=0",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1"
+        }
     ]
     return random.choice(headers)
 
@@ -46,14 +81,11 @@ def get_x_page_with_selenium(url: str) -> Tuple[Optional[str], int]:
         if driver:
             driver.quit()
 
-@app.route('/')
-def hello():
-    return "Привіт, це твій API сервер!"
 
-@app.route('/scrape', methods=['POST'])
+@app.route('/scrape', methods=['GET', 'POST'])
 def scrape_page():
-    """Обробник POST-запитів для скрапінгу сторінок"""
-    url = request.args.get('url')
+    """Обробник запитів для отримання вмісту сторінки"""
+    url = request.args.get('url') if request.method == 'GET' else request.form.get('url')
 
     if not url:
         return jsonify({"error": "Відсутній параметр URL"}), 400
@@ -66,4 +98,4 @@ def scrape_page():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
