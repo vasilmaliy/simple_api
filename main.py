@@ -58,7 +58,7 @@ def get_header() -> dict:
     return random.choice(headers)
 
 
-def get_x_page_with_selenium(url: str) -> Tuple[Optional[str], int]:
+def get_x_page_with_selenium(url: str) -> Optional[str]:
     """Отримує HTML через Selenium з випадковим User-Agent"""
     driver = None
     try:
@@ -73,14 +73,16 @@ def get_x_page_with_selenium(url: str) -> Tuple[Optional[str], int]:
         driver = webdriver.Chrome(options=chrome_options)
         driver.get(url)
         driver.implicitly_wait(random.uniform(5, 11))
-        return driver.page_source, 200
+        return driver
     except Exception as e:
         print(f"Selenium помилка: {e}")
+        driver.quit()
         return f"Помилка: {str(e)}", 500
-    finally:
-        if driver:
-            driver.quit()
 
+
+@app.route('/')
+def hello():
+    return "Привіт, це твій API сервер!"
 
 @app.route('/scrape', methods=['GET', 'POST'])
 def scrape_page():
@@ -93,8 +95,14 @@ def scrape_page():
     if not url.startswith(('http://', 'https://')):
         return jsonify({"error": "Невірний формат URL"}), 400
 
-    html, status_code = get_x_page_with_selenium(url)
-    return html, status_code
+    driver = get_x_page_with_selenium(url)
+    element = driver.find_element(By.CLASS_NAME, 'css-9pa8cd')
+
+    img = element.get_attribute("src")
+
+    driver.quit()
+
+    return img
 
 
 if __name__ == '__main__':
