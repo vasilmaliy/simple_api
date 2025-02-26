@@ -88,23 +88,26 @@ def hello():
 @app.route('/scrape', methods=['GET', 'POST'])
 def scrape_page():
     """Обробник запитів для отримання вмісту сторінки"""
-    url = request.args.get('url') if request.method == 'GET' else request.form.get('url')
+    try:
+        url = request.args.get('url') if request.method == 'GET' else request.form.get('url')
+        class_name = request.args.get('class_name', 'css-9pa8cd')  # Значення за замовчуванням
 
-    if not url:
-        return jsonify({"error": "Відсутній параметр URL"}), 400
+        if not url:
+            return jsonify({"error": "Відсутній параметр URL"}), 400
 
-    if not url.startswith(('http://', 'https://')):
-        return jsonify({"error": "Невірний формат URL"}), 400
+        if not url.startswith(('http://', 'https://')):
+            return jsonify({"error": "Невірний формат URL"}), 400
 
-    driver = get_x_page_with_selenium(url)
-    element = driver.find_element(By.CLASS_NAME, 'css-9pa8cd')
+        driver = get_x_page_with_selenium(url)
+        element = driver.find_element(By.CLASS_NAME, class_name)
 
-    img = element.get_attribute("src")
+        img = element.get_attribute("src")
 
-    driver.quit()
+        driver.quit()
 
-    return img
-
+        return img
+    except Exception as e:
+        return f'exception : {e}'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
