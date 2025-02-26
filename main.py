@@ -105,9 +105,9 @@ def scrape_page():
 
         driver.quit()
 
-        return img
+        return jsonify({"image_url": img})
     except Exception as e:
-        return f'exception : {e}'
+        return jsonify({"error": f'{e}'}), 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
