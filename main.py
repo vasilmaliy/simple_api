@@ -4,7 +4,8 @@ import random
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from typing import Optional, Tuple
+from selenium.webdriver.common.by import By
+from typing import Optional
 
 app = Flask(__name__)
 
